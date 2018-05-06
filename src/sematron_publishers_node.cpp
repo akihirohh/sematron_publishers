@@ -17,14 +17,34 @@
 
 #define MASTER_KEY 1993
 #define MASTER_IP 172172118
-#define PUBLISH_RATE 100
+#define PUBLISH_RATE 50
 
 int main(int argc, char* argv[] )
 {
   ros::init(argc, argv, "use_param");
   ros::NodeHandle node;
-  ros::Publisher pub = node.advertise<std_msgs::Int32MultiArray>("unlock_me_if_you_can", 1);
+  ros::Publisher pub_red_line = node.advertise<std_msgs::Int32MultiArray>("unlock_me_if_you_can", 1);
   ros::Rate loop_rate(PUBLISH_RATE);
+
+
+  //first subscriber
+  ros::Publisher pub_first_publisher = node.advertise <std_msgs::String> ("/OOOstart_hereOOO",1);
+  std_msgs::String msg_first_publisher;
+  msg_first_publisher.data = "Step -1!# Next step a contains a std_msgs/Int64MultiArray message. Use $rostopic... The message is coded (just cast each number to char)!";
+
+  //start_again
+  ros::Publisher pub_start_again = node.advertise <std_msgs::Int64MultiArray> ("step0",1);
+  std_msgs::Int64MultiArray msg_start_again;
+  char buf0[] = "It was tutorial till now! #Step 0!# Just /start_again xP";
+  for(int j = 0; j < sizeof(buf0)/sizeof(char); j++)
+	{
+		msg_start_again.data.push_back(buf0[j]);
+	}
+
+  //rostopic find
+  ros::Publisher pub_rostopic_find = node.advertise <std_msgs::String> ("/start_again",1);
+  std_msgs::String msg_rostopic_find;
+  msg_rostopic_find.data = "Next step contains a control_msgs/JointTolerance message. #Step1!#";
 
   //rosnode info /more_numbers 
   ros::Publisher pub_rosnode_info = node.advertise<control_msgs::JointTolerance>("some_wrong_physics",1);
@@ -46,16 +66,16 @@ int main(int argc, char* argv[] )
   //rostopic find std_msgs/Int64
   //rostopic echo /hint
   //rostopic echo /mazana_matatu
-  ros::Publisher pub_rostopic_find = node.advertise<std_msgs::Int64MultiArray>("/even_more_numbers",1);
-  std_msgs::Int64MultiArray msg_rostopic_find;
+  ros::Publisher pub_remember_status = node.advertise<std_msgs::Int64MultiArray>("/even_more_numbers",1);
+  std_msgs::Int64MultiArray msg_remember_status;
   char buf1[] = "#Step4!# Don’t forget to publish your status! Seriously, it's really important. One of the std_msgs/Int64 topics has a hint. Translate it to chona and you'll know the name of next topic.";
 	for(int j = 0; j < sizeof(buf1)/sizeof(char); j++)
 	{
-		msg_rostopic_find.data.push_back(buf1[j]*PUBLISH_RATE);
+		msg_remember_status.data.push_back(buf1[j]*PUBLISH_RATE);
 	}
-  ros::Publisher pub_rostopic_find2 = node.advertise <std_msgs::Int64> ("/hint_here",1);
-  std_msgs::Int64 msg_rostopic_find2; 
-  msg_rostopic_find2.data = 300;
+  ros::Publisher pub_remember_status2 = node.advertise <std_msgs::Int64> ("/hint_here",1);
+  std_msgs::Int64 msg_remember_status2; 
+  msg_remember_status2.data = 300;
 
   //rostopic echo /not_a_selfie --no_arr
   ros::Publisher pub_rostopic_echo_no_arr = node.advertise <sensor_msgs::BatteryState> ("/mazana_matatu",1);
@@ -100,20 +120,51 @@ int main(int argc, char* argv[] )
   geometry_msgs::PolygonStamped msg_param;
   msg_param.header.frame_id = "I bet you forgot to publish #Step8!# status. Anyway, now you need to publish #Step9!# Are you still changing the code and doing catkin_make every time? Why don't you try using arguments when you call $rosrun? You may have noticed the line int main(int argc, char* argv[]) in your nodes. argc gives you the number of arguments and argv gives you the arguments as strings. argv[0] gives you the path to the package but if you call $rosrun publish_my_status publish_my_status_node 9, then argv[1] = '9'. The function atoi conveniently converts string to int and you can publish it! ... ... ... It's not over yet! You'll learn something even more useful in /learn_parameters";
 
+  // explore param
+  ros::Publisher pub_explore_param = node.advertise <std_msgs::String> ("learn_parameters",1);
+  std_msgs::String msg_explore_param;
+  msg_explore_param.data = "Another way of changing variables inside node is ROS parameter. Explore $rosparam commands starting with tutorial# params";
+  std::string tutorial1 = "If there's a param, you can get it inside node using node.getParam(<param_name>, var_to_store_param); Try printing /tutorial1 with ROS_INFO";
+  std::string tutorial2 = "You can also set new values to params using command line. For example, if you want to use a param /myname_status (change myname to your name) to inform your status, you can use rosparam set /myname_status 10";
+  std::string tutorial3 = "Or you can set the param inside your node: node.setParam(<param_name>, new_value). Time to collect some gifts o/";
+  std::string small_gift = "You found a /key to unlock the publisher of a certain node. It may be obvious but just in case you don't find the node, search for Int32MultiArray messages";
+  std::string medium_gift = "You must find the IP of the machine that's publishing all this stuff... rosnode may help you in your journey. Or you can find where's the master";
+  std::string big_gift = "Your /key to unlock the publisher shall be the 10 numbers from master's IP without dots!!!";
+  std::string monstrous_gift = "Remove 1993 from each element of the array and you will be able to cast it to char.";
 
-  // Final topic
+  // image_view topic
   std_msgs::Int32MultiArray msg_red_line;
   int status = 0;
   char bufn[] = "Congrats! Now you have a grasp about rosparam.\tThe final topic is /red_line.\tRun rosrun image_view image_view image:=/red_line";
 	;
 	for(int j = 0; j <  sizeof(bufn)/sizeof(char); j++)
 	{
-		msg_red_line.data.push_back(bufn[j] + MASTER_IP);
+		msg_red_line.data.push_back(bufn[j] + MASTER_KEY);
 	}
+
+  // End of the beginning
+	image_transport::ImageTransport it(node);
+	image_transport::Publisher pub_end = it.advertise("/red_line", 1);
+	std::string fig_path = ros::package::getPath("sematron_publishers") + "/include/.dummy.png";
+	cv::Mat image = cv::imread(fig_path, CV_LOAD_IMAGE_COLOR);
+	sensor_msgs::ImagePtr msg_end = cv_bridge::CvImage(std_msgs::Header(), "bgr8", image).toImageMsg();
+
   ros::Time previous_time = ros::Time::now(), current_time;
 
   while(ros::ok())
   {
+    pub_first_publisher.publish(msg_first_publisher);
+    pub_start_again.publish(msg_start_again);
+    pub_rostopic_find.publish(msg_rostopic_find);
+    pub_rosnode_info.publish(msg_rosnode_info);
+    pub_rostopic_hz.publish(msg_rostopic_hz);
+    pub_remember_status.publish(msg_remember_status);
+    pub_remember_status2.publish(msg_remember_status2);
+    pub_rostopic_echo_no_arr.publish(msg_rostopic_echo_no_arr);
+    pub_rostopic_echo_no_arr2.publish(msg_rostopic_echo_no_arr2);
+    pub_rosrun_turtlesim.publish(msg_rosrun_turtlesim);
+    pub_explore_param.publish(msg_explore_param);
+
     current_time = ros::Time::now();
     if((current_time.toSec()-previous_time.toSec()) > 2)
     {
@@ -123,20 +174,23 @@ int main(int argc, char* argv[] )
       turtle_index = (turtle_index == 0) ? 1: 0;
       pub_args.publish(msg_args);
     }
-    pub_rosnode_info.publish(msg_rosnode_info);
-    pub_rostopic_hz.publish(msg_rostopic_hz);
-    pub_rostopic_find.publish(msg_rostopic_find);
-    pub_rostopic_find2.publish(msg_rostopic_find2);
-    pub_rostopic_echo_no_arr.publish(msg_rostopic_echo_no_arr);
-    pub_rostopic_echo_no_arr2.publish(msg_rostopic_echo_no_arr2);
-    pub_rosrun_turtlesim.publish(msg_rosrun_turtlesim);
+
+    node.setParam("/tutorial1", tutorial1);
+    node.setParam("/tutorial2", tutorial2);
+    node.setParam("/tutorial3", tutorial3);
+    node.setParam("/small_gift", small_gift);
+    node.setParam("/medium_gift", medium_gift);
+    node.setParam("/big_gift", big_gift);
+    node.setParam("/monstrous_gift", monstrous_gift);
+
     pub_param.publish(msg_param);
     node.getParam("/key", status);
-    if(status == MASTER_KEY)
+    if(status == MASTER_IP)
     {
-      pub.publish(msg_red_line);
+      pub_red_line.publish(msg_red_line);
       node.setParam("/key", 0);
     }
+    pub_end.publish(msg_end);
     ros::spinOnce();
     loop_rate.sleep();
   }
