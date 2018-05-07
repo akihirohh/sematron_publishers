@@ -23,9 +23,7 @@ int main(int argc, char* argv[] )
 {
   ros::init(argc, argv, "use_param");
   ros::NodeHandle node;
-  ros::Publisher pub_red_line = node.advertise<std_msgs::Int32MultiArray>("unlock_me_if_you_can", 1);
   ros::Rate loop_rate(PUBLISH_RATE);
-
 
   //first subscriber
   ros::Publisher pub_first_publisher = node.advertise <std_msgs::String> ("/OOOstart_hereOOO",1);
@@ -47,28 +45,28 @@ int main(int argc, char* argv[] )
   msg_rostopic_find.data = "Next step contains a control_msgs/JointTolerance message. #Step1!#";
 
   //rosnode info /more_numbers 
-  ros::Publisher pub_rosnode_info = node.advertise<control_msgs::JointTolerance>("some_wrong_physics",1);
-  control_msgs::JointTolerance msg_rosnode_info;
-  msg_rosnode_info.velocity = 18;
-  msg_rosnode_info.position = 14;
-  msg_rosnode_info.acceleration = 2;
-  msg_rosnode_info.name = "#Step2!# Learn about /more_numbers using $rosnode ...! Do you know what type of message it is? Then you can subscribe to it! The message is coded (You must add velocity to each number but don't forget to first subtract position and finally divide by acceleration).";
+  ros::Publisher pub_rostopic_info = node.advertise<control_msgs::JointTolerance>("/some_wrong_physics",1);
+  control_msgs::JointTolerance msg_rostopic_info;
+  msg_rostopic_info.velocity = 18;
+  msg_rostopic_info.position = 14;
+  msg_rostopic_info.acceleration = 2;
+  msg_rostopic_info.name = "#Step2!# Learn more about /more_numbers! Do you know what type of message it uses? Then you can subscribe to it! The message is coded (You must add velocity to each number, divide by acceleration and finally subtract position).";
 
   //rostopic hz /even_more_numbers
   ros::Publisher pub_rostopic_hz = node.advertise<std_msgs::Int16MultiArray> ("/more_numbers",1);
   std_msgs::Int16MultiArray msg_rostopic_hz;  
-  char buf[] = "#Step3!# Do you know what's the publishing rate of /even_more_numbers? You may want to use $rostopic... The closest integer to that rate multiplies every number of /even_more_numbers (originally just casting to char would do the job...)";
+  char buf[] = "#Step3!# Do you know what's the average publishing rate of /even_more_numbers? The closest integer to that rate multiplies every number of /even_more_numbers (originally just casting to char would do the job...)";
 	for(int j = 0; j < sizeof(buf)/sizeof(char); j++)
 	{
-		msg_rostopic_hz.data.push_back(buf[j]*msg_rosnode_info.acceleration - msg_rosnode_info.velocity + msg_rosnode_info.position);
+		msg_rostopic_hz.data.push_back((buf[j]+ msg_rostopic_info.position)*msg_rostopic_info.acceleration - msg_rostopic_info.velocity );
 	}
 
   //rostopic find std_msgs/Int64
   //rostopic echo /hint
   //rostopic echo /mazana_matatu
-  ros::Publisher pub_remember_status = node.advertise<std_msgs::Int64MultiArray>("/even_more_numbers",1);
-  std_msgs::Int64MultiArray msg_remember_status;
-  char buf1[] = "#Step4!# Don’t forget to publish your status! Seriously, it's really important. One of the std_msgs/Int64 topics has a hint. Translate it to chona and you'll know the name of next topic.";
+  ros::Publisher pub_remember_status = node.advertise<std_msgs::Int16MultiArray>("/even_more_numbers",1);
+  std_msgs::Int16MultiArray msg_remember_status;
+  char buf1[] = "#Step4!# Don't forget to publish your status! Seriously, it's really important. They're so important that one of the std_msgs/Int64 topics has a hint. Translate it to chona and you'll know the name of next topic.";
 	for(int j = 0; j < sizeof(buf1)/sizeof(char); j++)
 	{
 		msg_remember_status.data.push_back(buf1[j]*PUBLISH_RATE);
@@ -82,7 +80,7 @@ int main(int argc, char* argv[] )
   sensor_msgs::BatteryState msg_rostopic_echo_no_arr;
   msg_rostopic_echo_no_arr.power_supply_status = 5;
   msg_rostopic_echo_no_arr.location = "Message fields are important. For instance, power_supply_status gives your current step (just in case you forgot) and serial_number has the hint for next step!";
-  msg_rostopic_echo_no_arr.serial_number = "Sometimes you see a /not_a_selfie topic but you don't care about the array fields. Exclude them using --noarr argument with $rostopic echo!";
+  msg_rostopic_echo_no_arr.serial_number = "Sometimes you see a /not_a_selfie topic but you don't care about the array fields. Extra hint: $rostopic echo <topic> can have additional arguments!";
 
   //rostopic echo /not_a_selfie_for_sure --no_arr
   ros::Publisher pub_rostopic_echo_no_arr2 = node.advertise <sensor_msgs::Image> ("/not_a_selfie", 1);
@@ -99,7 +97,7 @@ int main(int argc, char* argv[] )
   //rosrun turtlesim turtlesim_node
   ros::Publisher pub_rosrun_turtlesim = node.advertise <sensor_msgs::Image> ("/not_a_selfie_for_sure", 1);
   sensor_msgs::Image msg_rosrun_turtlesim;
-  msg_rosrun_turtlesim.encoding = "#Step7!# Now you're about to move your Crush. Make it personal changing the node name (add __name:=my_crush). Make it use the right topic (add turtle1/cmd_vel:=move_crush). All together: $rosrun turtlesim turtlesim_node __name:=my_crush turtle1/cmd_vel:=move_crush. The movement shape gives you the name for next topic! (P.S. you may need to translate to maori language).";
+  msg_rosrun_turtlesim.encoding = "#Step7!# Now you're about to move your Crush. Make it personal changing the node name (add __name:=my_crush). Make it use the right topic as source of velocity commands (add turtle1/cmd_vel:=move_crush). All together: $rosrun turtlesim turtlesim_node __name:=my_crush turtle1/cmd_vel:=move_crush. The movement shape gives you the name for next topic! (P.S. you may need to translate to maori language).";
   for (int w = 0; w < 1024; w++)
   {
     for (int h = 0; h < 720; h++)
@@ -118,24 +116,25 @@ int main(int argc, char* argv[] )
   //parameters
   ros::Publisher pub_param = node.advertise <geometry_msgs::PolygonStamped> ("/tapawha",1);
   geometry_msgs::PolygonStamped msg_param;
-  msg_param.header.frame_id = "I bet you forgot to publish #Step8!# status. Anyway, now you need to publish #Step9!# Are you still changing the code and doing catkin_make every time? Why don't you try using arguments when you call $rosrun? You may have noticed the line int main(int argc, char* argv[]) in your nodes. argc gives you the number of arguments and argv gives you the arguments as strings. argv[0] gives you the path to the package but if you call $rosrun publish_my_status publish_my_status_node 9, then argv[1] = '9'. The function atoi conveniently converts string to int and you can publish it! ... ... ... It's not over yet! You'll learn something even more useful in /learn_parameters";
+  msg_param.header.frame_id = "I bet you forgot to publish #Step7!# status. Anyway, now you need to publish #Step8!# Are you still changing the code and doing catkin_make every time? Why don't you try using arguments when you call $rosrun? You may have noticed the line int main(int argc, char* argv[]) in your nodes. argc gives you the number of arguments and argv gives you the arguments as strings. argv[0] gives you the path to the package. If you call $rosrun publish_my_status publish_my_status_node 8, then argv[1] = '8'. The function atoi conveniently converts string to int and you can publish it! ... ... ... It's not over yet! You'll learn something even more useful in /learn_parameters";
 
   // explore param
   ros::Publisher pub_explore_param = node.advertise <std_msgs::String> ("learn_parameters",1);
   std_msgs::String msg_explore_param;
-  msg_explore_param.data = "Another way of changing variables inside node is ROS parameter. Explore $rosparam commands starting with tutorial# params";
-  std::string tutorial1 = "If there's a param, you can get it inside node using node.getParam(<param_name>, var_to_store_param); Try printing /tutorial1 with ROS_INFO";
-  std::string tutorial2 = "You can also set new values to params using command line. For example, if you want to use a param /myname_status (change myname to your name) to inform your status, you can use rosparam set /myname_status 10";
-  std::string tutorial3 = "Or you can set the param inside your node: node.setParam(<param_name>, new_value). Time to collect some gifts o/";
-  std::string small_gift = "You found a /key to unlock the publisher of a certain node. It may be obvious but just in case you don't find the node, search for Int32MultiArray messages";
+  msg_explore_param.data = "#Step9!# Another way of changing variables inside node is ROS parameter. Explore $rosparam commands starting with tutorial# params";
+  std::string tutorial1 = "If there's a param, you can get it inside node using node.getParam(<param_name>, var_to_store_param). Try printing /tutorial1 with ROS_INFO";
+  std::string tutorial2 = "You can also set new values to params using command line. For example, if you want to use a param /myname_status (change myname to your name) to inform your status, you can use rosparam set /myname_status 9";
+  std::string tutorial3 = "Or you can set the param inside your node: node.setParam(<param_name>, new_value). Time to collect some gifts o/ Check them with $rosparam list...";
+  std::string small_gift = "You found a /key to unlock the publisher of a certain node. It may be obvious but just in case you don't find the node, search for std_msgs/Int32MultiArray messages";
   std::string medium_gift = "You must find the IP of the machine that's publishing all this stuff... rosnode may help you in your journey. Or you can find where's the master";
-  std::string big_gift = "Your /key to unlock the publisher shall be the 10 numbers from master's IP without dots!!!";
+  std::string big_gift = "Your /key to unlock the publisher shall be the 9 numbers from master's IP without dots!!!";
   std::string monstrous_gift = "Remove 1993 from each element of the array and you will be able to cast it to char.";
 
   // image_view topic
+  ros::Publisher pub_red_line = node.advertise<std_msgs::Int32MultiArray>("unlock_me_if_you_can", 1);
   std_msgs::Int32MultiArray msg_red_line;
   int status = 0;
-  char bufn[] = "Congrats! Now you have a grasp about rosparam.\tThe final topic is /red_line.\tRun rosrun image_view image_view image:=/red_line";
+  char bufn[] = "\n#Step10!# Congrats! Now you have a grasp about rosparam. The final topic is /red_line. Run rosrun image_view image_view image:=/red_line";
 	;
 	for(int j = 0; j <  sizeof(bufn)/sizeof(char); j++)
 	{
@@ -145,7 +144,7 @@ int main(int argc, char* argv[] )
   // End of the beginning
 	image_transport::ImageTransport it(node);
 	image_transport::Publisher pub_end = it.advertise("/red_line", 1);
-	std::string fig_path = ros::package::getPath("sematron_publishers") + "/include/.dummy.png";
+	std::string fig_path = ros::package::getPath("sematron_publishers") + "/include/.end.png";
 	cv::Mat image = cv::imread(fig_path, CV_LOAD_IMAGE_COLOR);
 	sensor_msgs::ImagePtr msg_end = cv_bridge::CvImage(std_msgs::Header(), "bgr8", image).toImageMsg();
 
@@ -156,7 +155,7 @@ int main(int argc, char* argv[] )
     pub_first_publisher.publish(msg_first_publisher);
     pub_start_again.publish(msg_start_again);
     pub_rostopic_find.publish(msg_rostopic_find);
-    pub_rosnode_info.publish(msg_rosnode_info);
+    pub_rostopic_info.publish(msg_rostopic_info);
     pub_rostopic_hz.publish(msg_rostopic_hz);
     pub_remember_status.publish(msg_remember_status);
     pub_remember_status2.publish(msg_remember_status2);
