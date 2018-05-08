@@ -1,4 +1,8 @@
+// Tutorial produced by Vitor Akihiro Hisano Higuti
+// for ROS minicourse (XIV SEMATRON)
+
 #include "ros/ros.h"
+#include "ros/network.h"
 #include <ros/package.h>
 #include <image_transport/image_transport.h>
 #include <opencv2/highgui/highgui.hpp>
@@ -16,7 +20,6 @@
 #include <geometry_msgs/PolygonStamped.h>
 
 #define MASTER_KEY 1993
-#define MASTER_IP 172172118
 #define PUBLISH_RATE 50
 
 int main(int argc, char* argv[] )
@@ -24,16 +27,18 @@ int main(int argc, char* argv[] )
   ros::init(argc, argv, "use_param");
   ros::NodeHandle node;
   ros::Rate loop_rate(PUBLISH_RATE);
+  std::string MASTER_IP = ros::network::getHost();
 
+  ROS_INFO_STREAM("Start with $ rostopic echo /000start_here000");
   //first subscriber
   ros::Publisher pub_first_publisher = node.advertise <std_msgs::String> ("/OOOstart_hereOOO",1);
   std_msgs::String msg_first_publisher;
-  msg_first_publisher.data = "Step -1!# Next step a contains a std_msgs/Int64MultiArray message. Use $rostopic... The message is coded (just cast each number to char)!";
+  msg_first_publisher.data = "Step -1!# Next step contains a std_msgs/Int64MultiArray message. Use $rostopic... The message is coded (just cast each number to char)!";
 
   //start_again
   ros::Publisher pub_start_again = node.advertise <std_msgs::Int64MultiArray> ("step0",1);
   std_msgs::Int64MultiArray msg_start_again;
-  char buf0[] = "It was tutorial till now! #Step 0!# Just /start_again xP";
+  char buf0[] = "Fools! It was tutorial till now! #Step 0!# Just /start_again xP";
   for(int j = 0; j < sizeof(buf0)/sizeof(char); j++)
 	{
 		msg_start_again.data.push_back(buf0[j]);
@@ -50,7 +55,7 @@ int main(int argc, char* argv[] )
   msg_rostopic_info.velocity = 18;
   msg_rostopic_info.position = 14;
   msg_rostopic_info.acceleration = 2;
-  msg_rostopic_info.name = "#Step2!# Learn more about /more_numbers! Do you know what type of message it uses? Then you can subscribe to it! The message is coded (You must add velocity to each number, divide by acceleration and finally subtract position).";
+  msg_rostopic_info.name = "#Step2!# Learn more about /more_numbers! Do you know what type of message it uses? Then you can subscribe to it! The message is coded (You must add velocity to each number, divide by acceleration and finally subtract position). Don't be lazy and make a new package: On src directory, catkin_create_pkg <package_name> <dependency_1> ... <dependency_n>";
 
   //rostopic hz /even_more_numbers
   ros::Publisher pub_rostopic_hz = node.advertise<std_msgs::Int16MultiArray> ("/more_numbers",1);
@@ -121,19 +126,19 @@ int main(int argc, char* argv[] )
   // explore param
   ros::Publisher pub_explore_param = node.advertise <std_msgs::String> ("learn_parameters",1);
   std_msgs::String msg_explore_param;
-  msg_explore_param.data = "#Step9!# Another way of changing variables inside node is ROS parameter. Explore $rosparam commands starting with tutorial# params";
+  msg_explore_param.data = "#Step9!# Another way of changing variables inside node is ROS parameter. Explore $rosparam commands starting with /tutorial# params";
   std::string tutorial1 = "If there's a param, you can get it inside node using node.getParam(<param_name>, var_to_store_param). Try printing /tutorial1 with ROS_INFO";
-  std::string tutorial2 = "You can also set new values to params using command line. For example, if you want to use a param /myname_status (change myname to your name) to inform your status, you can use rosparam set /myname_status 9";
-  std::string tutorial3 = "Or you can set the param inside your node: node.setParam(<param_name>, new_value). Time to collect some gifts o/ Check them with $rosparam list...";
-  std::string small_gift = "You found a /key to unlock the publisher of a certain node. It may be obvious but just in case you don't find the node, search for std_msgs/Int32MultiArray messages";
+  std::string tutorial2 = "You can also set new values to params using command line. For example, if you want to set the value of a param /myname_status (change myname to your name) to inform your status, you can use rosparam set /myname_status 9";
+  std::string tutorial3 = "Or you can set the param inside your node: node.setParam(<param_name>, new_value). Did you know isipho is gift in zulu? No? Don't waste more time! Collect your four isiphos disguised as params!";
+  std::string small_gift = "Have you checked all tutorial params? Anyway, you just found a /key to unlock the publisher of a certain node. It may be obvious but just in case you don't find the node, search for std_msgs/Int32MultiArray messages";
   std::string medium_gift = "You must find the IP of the machine that's publishing all this stuff... rosnode may help you in your journey. Or you can find where's the master";
-  std::string big_gift = "Your /key to unlock the publisher shall be the 9 numbers from master's IP without dots!!!";
+  std::string big_gift = "Your /key to unlock the publisher shall be the master's IP!!!";
   std::string monstrous_gift = "Remove 1993 from each element of the array and you will be able to cast it to char.";
 
   // image_view topic
   ros::Publisher pub_red_line = node.advertise<std_msgs::Int32MultiArray>("unlock_me_if_you_can", 1);
   std_msgs::Int32MultiArray msg_red_line;
-  int status = 0;
+  std::string status = "";
   char bufn[] = "\n#Step10!# Congrats! Now you have a grasp about rosparam. The final topic is /red_line. Run rosrun image_view image_view image:=/red_line";
 	;
 	for(int j = 0; j <  sizeof(bufn)/sizeof(char); j++)
@@ -174,20 +179,21 @@ int main(int argc, char* argv[] )
       pub_args.publish(msg_args);
     }
 
+    node.setParam("/000Check_tutorial_params", "###\nSeriously, start with tutorial params\n###");
     node.setParam("/tutorial1", tutorial1);
     node.setParam("/tutorial2", tutorial2);
     node.setParam("/tutorial3", tutorial3);
-    node.setParam("/small_gift", small_gift);
-    node.setParam("/medium_gift", medium_gift);
-    node.setParam("/big_gift", big_gift);
-    node.setParam("/monstrous_gift", monstrous_gift);
+    node.setParam("/red_line/small_isipho", small_gift);
+    node.setParam("/red_line/medium_isipho", medium_gift);
+    node.setParam("/red_line/big_isipho", big_gift);
+    node.setParam("/red_line/monstrous_isipho", monstrous_gift);
 
     pub_param.publish(msg_param);
     node.getParam("/key", status);
-    if(status == MASTER_IP)
+    if(strcmp(status.c_str(),MASTER_IP.c_str()) == 0)
     {
       pub_red_line.publish(msg_red_line);
-      node.setParam("/key", 0);
+      node.setParam("/key", "");
     }
     pub_end.publish(msg_end);
     ros::spinOnce();
