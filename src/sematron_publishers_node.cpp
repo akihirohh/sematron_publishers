@@ -13,7 +13,7 @@
 #include <std_msgs/Int16MultiArray.h>
 #include <std_msgs/Int32MultiArray.h>
 #include <std_msgs/Int64MultiArray.h>
-#include <sensor_msgs/BatteryState.h>
+#include <diagnostic_msgs/DiagnosticStatus.h>
 #include <control_msgs/JointTolerance.h>
 #include <cmath>
 #include "geometry_msgs/Twist.h"
@@ -24,7 +24,7 @@
 
 int main(int argc, char* argv[] )
 {
-  ros::init(argc, argv, "use_param");
+  ros::init(argc, argv, "hint_here");
   ros::NodeHandle node;
   ros::Rate loop_rate(PUBLISH_RATE);
   std::string MASTER_IP = ros::network::getHost();
@@ -81,12 +81,12 @@ int main(int argc, char* argv[] )
   msg_remember_status2.data = 300;
 
   //rostopic echo /not_a_selfie --no_arr
-  ros::Publisher pub_rostopic_echo_no_arr = node.advertise <sensor_msgs::BatteryState> ("/mazana_matatu",1);
-  sensor_msgs::BatteryState msg_rostopic_echo_no_arr;
-  msg_rostopic_echo_no_arr.power_supply_status = 5;
-  msg_rostopic_echo_no_arr.location = "Message fields are important. For instance, power_supply_status gives your current step (just in case you forgot) and serial_number has the hint for next step!";
-  msg_rostopic_echo_no_arr.serial_number = "Sometimes you see a /not_a_selfie topic but you don't care about the array fields. Extra hint: $rostopic echo <topic> can have additional arguments!";
-
+  ros::Publisher pub_rostopic_echo_no_arr = node.advertise <diagnostic_msgs::DiagnosticStatus> ("/mazana_matatu",1);
+  diagnostic_msgs::DiagnosticStatus msg_rostopic_echo_no_arr;
+  msg_rostopic_echo_no_arr.level = 5;
+  msg_rostopic_echo_no_arr.name = "Message fields are important. For instance, level gives your current step (just in case you forgot) and hardware_id has the hint for next step!";
+  msg_rostopic_echo_no_arr.hardware_id = "Sometimes you see a /not_a_selfie topic but you don't care about the array fields. Extra hint: $rostopic echo <topic> can have additional arguments!";
+ 
   //rostopic echo /not_a_selfie_for_sure --no_arr
   ros::Publisher pub_rostopic_echo_no_arr2 = node.advertise <sensor_msgs::Image> ("/not_a_selfie", 1);
   sensor_msgs::Image msg_rostopic_echo_no_arr2;
@@ -126,7 +126,7 @@ int main(int argc, char* argv[] )
   // explore param
   ros::Publisher pub_explore_param = node.advertise <std_msgs::String> ("learn_parameters",1);
   std_msgs::String msg_explore_param;
-  msg_explore_param.data = "#Step9!# Another way of changing variables inside node is ROS parameter. Explore $rosparam commands starting with /tutorial# params";
+  msg_explore_param.data = "#Step9!# Another way of changing variables inside node is ROS parameter. Explore $rosparam commands starting with /tutorial# params. Start with $ rosparam list.";
   std::string tutorial1 = "If there's a param, you can get it inside node using node.getParam(<param_name>, var_to_store_param). Try printing /tutorial1 with ROS_INFO";
   std::string tutorial2 = "You can also set new values to params using command line. For example, if you want to set the value of a param /myname_status (change myname to your name) to inform your status, you can use rosparam set /myname_status 9";
   std::string tutorial3 = "Or you can set the param inside your node: node.setParam(<param_name>, new_value). Did you know isipho is gift in zulu? No? Don't waste more time! Collect your four isiphos disguised as params!";
