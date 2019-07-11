@@ -29,11 +29,17 @@ int main(int argc, char* argv[] )
   ros::Rate loop_rate(PUBLISH_RATE);
   std::string MASTER_IP = ros::network::getHost();
 
+  ROS_INFO_STREAM("Instructions:");
+  ROS_INFO_STREAM("1) When you see /blablabla, that's a topic");
+  ROS_INFO_STREAM("2) When you see $ blablabla, that's a terminal command");
+  ROS_INFO_STREAM("3) When in doubt, there's always $ rostopic echo ...");
+
   ROS_INFO_STREAM("Start with $ rostopic echo /000start_here000");
+  
   //first subscriber
-  ros::Publisher pub_first_publisher = node.advertise <std_msgs::String> ("/OOOstart_hereOOO",1);
+  ros::Publisher pub_first_publisher = node.advertise <std_msgs::String> ("/000start_here000",1);
   std_msgs::String msg_first_publisher;
-  msg_first_publisher.data = "Step -1!# Next step contains a std_msgs/Int64MultiArray message. Use $rostopic... The message is coded (just cast each number to char)!";
+  msg_first_publisher.data = "Step -1!# Next step contains a std_msgs/Int64MultiArray message. Use $rostopic echo /step0. The message is coded (just cast each number to char)! Hint: You can use online int to char converters";
 
   //start_again
   ros::Publisher pub_start_again = node.advertise <std_msgs::Int64MultiArray> ("step0",1);
@@ -47,7 +53,7 @@ int main(int argc, char* argv[] )
   //rostopic find
   ros::Publisher pub_rostopic_find = node.advertise <std_msgs::String> ("/start_again",1);
   std_msgs::String msg_rostopic_find;
-  msg_rostopic_find.data = "Next step contains a control_msgs/JointTolerance message. #Step1!#";
+  msg_rostopic_find.data = "Use $rostopic info to find which topic has the control_msgs/JointTolerance message #Step1!#";
 
   //rosnode info /more_numbers 
   ros::Publisher pub_rostopic_info = node.advertise<control_msgs::JointTolerance>("/some_wrong_physics",1);
