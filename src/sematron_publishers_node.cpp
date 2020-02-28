@@ -1,8 +1,8 @@
 // Tutorial produced by Vitor Akihiro Hisano Higuti
-// for ROS minicourse (XIV SEMATRON)
+// for ROS minicourse
 
-#include "ros/ros.h"
-#include "ros/network.h"
+#include <ros/ros.h>
+#include <ros/network.h>
 #include <ros/package.h>
 #include <image_transport/image_transport.h>
 #include <opencv2/highgui/highgui.hpp>
@@ -16,12 +16,19 @@
 #include <diagnostic_msgs/DiagnosticStatus.h>
 #include <control_msgs/JointTolerance.h>
 #include <cmath>
-#include "geometry_msgs/Twist.h"
+#include <geometry_msgs/Twist.h>
 #include <geometry_msgs/PolygonStamped.h>
+#include <std_srvs/Trigger.h>
 
 #define MASTER_KEY 1993
 #define PUBLISH_RATE 50
 
+bool keyService(std_srvs::Trigger::Request& request, std_srvs::Trigger::Response& response)
+{
+  response.success = true;
+  response.message = "Your magic number is 1993. Use it wisely";
+  return true;
+}
 int main(int argc, char* argv[] )
 {
   ros::init(argc, argv, "hint_here");
@@ -30,8 +37,8 @@ int main(int argc, char* argv[] )
   std::string MASTER_IP = ros::network::getHost();
 
   ROS_INFO_STREAM("Instructions:");
-  ROS_INFO_STREAM("1) When you see /blablabla, that's a topic");
-  ROS_INFO_STREAM("2) When you see $ blablabla, that's a terminal command");
+  ROS_INFO_STREAM("1) When you see /blablabla, that's a topic/param/service");
+  ROS_INFO_STREAM("2) When you see $blablabla, that's a terminal command");
   ROS_INFO_STREAM("3) When in doubt, there's always $ rostopic echo ...");
 
   ROS_INFO_STREAM("Start with $ rostopic echo /000start_here000");
@@ -77,7 +84,7 @@ int main(int argc, char* argv[] )
   //rostopic echo /mazana_matatu
   ros::Publisher pub_remember_status = node.advertise<std_msgs::Int16MultiArray>("/even_more_numbers",1);
   std_msgs::Int16MultiArray msg_remember_status;
-  char buf1[] = "#Step4!# Don't forget to publish your status! Seriously, it's really important. They're so important that one of the std_msgs/Int64 topics has a hint. Translate it to chona and you'll know the name of next topic.";
+  char buf1[] = "#Step4!# Don't forget to publish your status! Seriously, it's really important. They're so important that one of the std_msgs/Int64 topics has a hint. Translate it to chona (a random language in Google Translate) and you'll know the name of next topic.";
 	for(int j = 0; j < sizeof(buf1)/sizeof(char); j++)
 	{
 		msg_remember_status.data.push_back(buf1[j]*PUBLISH_RATE);
@@ -108,7 +115,7 @@ int main(int argc, char* argv[] )
   //rosrun turtlesim turtlesim_node
   ros::Publisher pub_rosrun_turtlesim = node.advertise <sensor_msgs::Image> ("/not_a_selfie_for_sure", 1);
   sensor_msgs::Image msg_rosrun_turtlesim;
-  msg_rosrun_turtlesim.encoding = "#Step7!# Now you're about to move your Crush. Make it personal changing the node name (add __name:=my_crush). Make it use the right topic as source of velocity commands (add turtle1/cmd_vel:=move_crush). All together: $rosrun turtlesim turtlesim_node __name:=my_crush turtle1/cmd_vel:=move_crush. The movement shape gives you the name for next topic! (P.S. you may need to translate to maori language).";
+  msg_rosrun_turtlesim.encoding = "#Step7!# Now you're about to move your Crush. Make it personal changing the node name (add __name:=my_crush). Make it use the right topic as source of velocity commands (add turtle1/cmd_vel:=move_crush). All together: $rosrun turtlesim turtlesim_node __name:=my_crush turtle1/cmd_vel:=move_crush. The movement shape gives you the name for next topic! (P.S. you may need to translate to maori - another random language in Google Translate).";
   for (int w = 0; w < 1024; w++)
   {
     for (int h = 0; h < 720; h++)
@@ -129,17 +136,20 @@ int main(int argc, char* argv[] )
   geometry_msgs::PolygonStamped msg_param;
   msg_param.header.frame_id = "I bet you forgot to publish #Step7!# status. Anyway, now you need to publish #Step8!# Are you still changing the code and doing catkin_make every time? Why don't you try using arguments when you call $rosrun? You may have noticed the line int main(int argc, char* argv[]) in your nodes. argc gives you the number of arguments and argv gives you the arguments as strings. argv[0] gives you the path to the package. If you call $rosrun publish_my_status publish_my_status_node 8, then argv[1] = '8'. The function atoi conveniently converts string to int and you can publish it! ... ... ... It's not over yet! You'll learn something even more useful in /learn_parameters";
 
+
   // explore param
   ros::Publisher pub_explore_param = node.advertise <std_msgs::String> ("learn_parameters",1);
   std_msgs::String msg_explore_param;
   msg_explore_param.data = "#Step9!# Another way of changing variables inside node is ROS parameter. Explore $rosparam commands starting with /tutorial# params. Start with $ rosparam list.";
-  std::string tutorial1 = "If there's a param, you can get it inside node using nodeHandle.getParam(<param_name>, var_to_store_param). Try printing /tutorial1 with ROS_INFO_STREAM";
+  std::string tutorial1 = "If there's a param, you can get it inside node using nodeHandle.getParam(<param_name>, var_to_store_param). Make a node to print /tutorial1 with ROS_INFO_STREAM";
   std::string tutorial2 = "You can also set new values to params using command line. For example, if you want to set the value of a param /myname_status (change myname to your name) to inform your status, you can use $ rosparam set /myname_status 9. Check its value with $ rosparam get!";
   std::string tutorial3 = "Or you can set the param inside your node: nodeHandle.setParam(<param_name>, new_value). Did you know isipho is gift in zulu? No? Do not waste more time! Collect your four isiphos disguised as params!";
   std::string small_gift = "Have you checked all tutorial params? Anyway, you just found an empty /key to unlock the publisher of a certain node. It may be obvious but just in case you don't find the node, search for std_msgs/Int32MultiArray messages. Keep echoing the topic until you set the /key =]";
   std::string medium_gift = "You must find the IP of the machine that's publishing all this stuff... rosnode may help you in your journey. Or you can find where's the master";
   std::string big_gift = "Your /key to unlock the publisher shall be the master's IP!!!";
-  std::string monstrous_gift = "Remove 1993 from each element of the array and you will be able to cast it to char.";
+  std::string monstrous_gift = "Remove a certain number from each element of the array and you will be able to cast it to char. Do you know about ros services? They are useful to execute request/reply interactions. Explore $ rosservice to find the genie that will grant your desire when called";
+
+  ros::ServiceServer service = node.advertiseService("genie_the_server", keyService);
 
   // image_view topic
   ros::Publisher pub_red_line = node.advertise<std_msgs::Int32MultiArray>("unlock_me_if_you_can", 1);
